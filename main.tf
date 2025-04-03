@@ -23,24 +23,24 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_mssql_server" "sqlserver" {
-  name = "${var.sql_server_name}-${random_integer.ri.result}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location = azurerm_resource_group.rg.location
-  administrator_login = var.sql_admin_login
+  name                         = "${var.sql_server_name}-${random_integer.ri.result}"
+  resource_group_name          = azurerm_resource_group.rg.name
+  location                     = azurerm_resource_group.rg.location
+  administrator_login          = var.sql_admin_login
   administrator_login_password = var.sql_admin_password
-  version = "12.0"
+  version                      = "12.0"
 }
 
 resource "azurerm_mssql_database" "db" {
-  name = "${var.sql_database_name}-${random_integer.ri.result}"
-  server_id = azurerm_mssql_server.sqlserver.id  
+  name      = "${var.sql_database_name}-${random_integer.ri.result}"
+  server_id = azurerm_mssql_server.sqlserver.id
 }
 
 resource "azurerm_mssql_firewall_rule" "sqlfirewall" {
-  name = "${var.firewall_rule_name}-${random_integer.ri.result}"
-  server_id = azurerm_mssql_server.sqlserver.id
+  name             = "${var.firewall_rule_name}-${random_integer.ri.result}"
+  server_id        = azurerm_mssql_server.sqlserver.id
   start_ip_address = "0.0.0.0"
-  end_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
 
 resource "azurerm_service_plan" "sp" {
@@ -58,8 +58,8 @@ resource "azurerm_linux_web_app" "webapp" {
   service_plan_id     = azurerm_service_plan.sp.id
 
   connection_string {
-    name = "DefaultConnection"
-    type = "SQLAzure"
+    name  = "DefaultConnection"
+    type  = "SQLAzure"
     value = "Data Source=tcp:${azurerm_mssql_server.sqlserver.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.db.name};User ID=${azurerm_mssql_server.sqlserver.administrator_login};Password=${azurerm_mssql_server.sqlserver.administrator_login_password};Trusted_Connection=False; MultipleActiveResultSets=True;"
   }
 
