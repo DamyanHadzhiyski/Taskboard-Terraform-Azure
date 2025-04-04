@@ -30,13 +30,13 @@ jobs:
 
     # Generate an execution plan for terraform
     - name: Terraform Plan
-      run: terraform plan -out tfplan
+      run: terraform plan -out=tfplan
       
     # Save plan to artifacts
     - name: Publish Terraform Plan
       uses: actions/upload-artifact@v4
       with:
-        name: tfplan
+        name: terraform-plan
         path: tfplan
         
   terraform-apply:
